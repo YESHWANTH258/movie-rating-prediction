@@ -5,11 +5,36 @@ from data_preprocessing import DataPreprocessor
 from feature_engineering import FeatureEngineer
 from model_training import MovieRatingPredictor
 
+def check_data_files():
+    """Check if required data files exist and provide guidance if they don't."""
+    required_files = {
+        'data/movies.csv': 'Main movie dataset',
+        'data/IMDb Movies India.csv': 'Indian movie dataset'
+    }
+    
+    missing_files = []
+    for file_path, description in required_files.items():
+        if not os.path.exists(file_path):
+            missing_files.append((file_path, description))
+    
+    if missing_files:
+        print("\nError: Required data files are missing!")
+        print("\nPlease download the following files and place them in the data/ directory:")
+        for file_path, description in missing_files:
+            print(f"\n- {file_path} ({description})")
+        print("\nInstructions for downloading the data files can be found in data/README.md")
+        return False
+    return True
+
 def main():
     try:
         # Create necessary directories
         os.makedirs('data', exist_ok=True)
         os.makedirs('models', exist_ok=True)
+        
+        # Check for required data files
+        if not check_data_files():
+            return
         
         # Initialize components
         preprocessor = DataPreprocessor()
@@ -19,10 +44,6 @@ def main():
         # Define file paths
         data_path = 'data/movies.csv'
         model_path = 'models/movie_rating_predictor.joblib'
-        
-        # Check if data file exists
-        if not os.path.exists(data_path):
-            raise FileNotFoundError(f"Data file not found at {data_path}")
         
         # Load and preprocess data
         print("Loading and preprocessing data...")
